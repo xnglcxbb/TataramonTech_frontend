@@ -1,0 +1,40 @@
+import 'package:flutter/material.dart';
+
+// Standalone Helper for the Top Bar
+Widget buildProfileHeader(BuildContext context, String title) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 10),
+    child: Row(
+      children: [
+        IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20),
+          onPressed: () => Navigator.pop(context),
+        ),
+        Expanded(
+          child: Center(
+            child: Text(
+                title,
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontFamily: 'PoppinsBold',
+                    fontSize: 20
+                )
+            ),
+          ),
+        ),
+        const SizedBox(width: 48),
+      ],
+    ),
+  );
+}
+
+// Standalone Helper for the White Body Container
+BoxDecoration profileContainerDecoration() {
+  return const BoxDecoration(
+    color: Colors.white,
+    borderRadius: BorderRadius.only(
+      topLeft: Radius.circular(50),
+      topRight: Radius.circular(50),
+    ),
+  );
+}
