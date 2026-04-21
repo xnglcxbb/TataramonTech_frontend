@@ -9,15 +9,13 @@ class PrivacyScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFF384087),
       body: SafeArea(
-        bottom: false, // Prevents white gaps at the bottom on some devices
+        bottom: false,
         child: Column(
           children: [
-            // 2. Use the shared helper (No underscore!)
             buildProfileHeader(context, "Privacy"),
             Expanded(
               child: Container(
                 width: double.infinity,
-                // 3. Use the shared helper (No underscore!)
                 decoration: profileContainerDecoration(),
                 child: Padding(
                   padding: const EdgeInsets.all(30),
@@ -34,7 +32,7 @@ class PrivacyScreen extends StatelessWidget {
                         ),
                         trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 16, color: Colors.grey),
                         onTap: () {
-                          // Backend devs will hook up password reset logic here
+                          // password reset logic here
                         },
                       ),
                       const Divider(height: 1, indent: 15, endIndent: 15),

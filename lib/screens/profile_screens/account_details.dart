@@ -33,7 +33,7 @@ class AccountDetailsScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 48), // Balancing spacer for the back button
+                  const SizedBox(width: 48),
                 ],
               ),
             ),
@@ -54,7 +54,6 @@ class AccountDetailsScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Profile Picture Center Alignment
                       Center(
                         child: Stack(
                           children: [
@@ -65,7 +64,6 @@ class AccountDetailsScreen extends StatelessWidget {
                                 shape: BoxShape.circle,
                                 border: Border.all(color: Colors.grey.shade300, width: 1),
                                 color: Colors.white,
-                                // ADDED: Shadow for the circular profile container
                                 boxShadow: [
                                   BoxShadow(
                                     color: Colors.black.withValues(alpha: 0.06),
@@ -105,7 +103,6 @@ class AccountDetailsScreen extends StatelessWidget {
                             shadowColor: Colors.black.withValues(alpha: 0.5),
                           ),
                           onPressed: () {
-                            // Navigates to the EditProfile screen
                             Navigator.push(
                               context,
                               MaterialPageRoute(builder: (context) => const EditProfileScreen()),

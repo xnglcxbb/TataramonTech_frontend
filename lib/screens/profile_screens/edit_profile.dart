@@ -25,11 +25,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF384087),
-      // Removing SafeArea here allows the Container to hit the bottom edge
       body: Column(
         children: [
           // HEADER SECTION
-          // We add top padding manually now to account for the status bar
           Padding(
             padding: const EdgeInsets.fromLTRB(25, 50, 25, 10),
             child: Row(
@@ -68,8 +66,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
               ),
               child: SingleChildScrollView(
-                // Use bottom padding here to ensure content isn't
-                // cut off by the home indicator on iOS/Android
                 padding: const EdgeInsets.fromLTRB(30, 40, 30, 40),
                 child: Column(
                   children: [
@@ -105,7 +101,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             shape: BoxShape.circle,
             border: Border.all(color: Colors.grey.shade300, width: 1),
             color: Colors.white,
-            // ADDED: Shadow for the circular profile container
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.06),
@@ -125,7 +120,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           right: 5,
           child: Container(
             padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration( // Removed 'const' because of dynamic shadow values
+            decoration: BoxDecoration(
               color: const Color(0xFFCDD0EC),
               shape: BoxShape.circle,
               // Use boxShadow for the Container
@@ -185,8 +180,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           ),
           child: DropdownButtonHideUnderline(
             child: DropdownButton<String>(
-              // 2. Set itemHeight to match or be slightly less than your container height
-              // Flutter default is 48.0, so we must lower it for a 45.0 container.
               itemHeight: 48.0,
               value: selectedGender,
               hint: const Text(
@@ -259,14 +252,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             controller: controller,
             decoration: InputDecoration(
               hintText: hint,
-              isDense: true, // IMPORTANT: Makes the field more compact
+              isDense: true,
               hintStyle: const TextStyle(
                 color: Color(0xFFCDD0EC),
                 fontSize: 13,
               ),
               filled: true,
               fillColor: Colors.white,
-              // Adjust vertical padding to control height internally
               contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
 
               enabledBorder: OutlineInputBorder(

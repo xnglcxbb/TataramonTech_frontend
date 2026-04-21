@@ -213,8 +213,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               // LOGIN BUTTON
                               onPressed: () {
                                 if (_formKey.currentState!.validate()) {
-                                  // In a real app, you'd check your database/API here.
-                                  // If successful, navigate to the Home Screen:
+                                  //check database/API here
                                   Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
@@ -263,7 +262,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         const SizedBox(height: 30),
 
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.center, // Center usually looks better for this UI pattern
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             const Text(
                               "Don't have an account? ",
@@ -273,7 +272,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 color: Color(0xFF333652),
                               ),
                             ),
-                            TextButton( // Using TextButton for a cleaner "link" look
+                            TextButton(
                               onPressed: () {
                                 Navigator.push(
                                   context,
@@ -286,7 +285,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   fontWeight: FontWeight.bold,
                                   color: Color(0xFF333652),
                                   fontFamily: 'PoppinsBold',
-                                  fontSize: 12, // Match the size of your prompt text
+                                  fontSize: 12,
                                 ),
                               ),
                             ),

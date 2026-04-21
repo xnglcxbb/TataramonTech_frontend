@@ -24,7 +24,6 @@ class _SignUpScreenState extends State<SignupScreen> {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Container(
-            // Removed fixed height to prevent overflow/scrolling
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
             decoration: BoxDecoration(
@@ -39,9 +38,8 @@ class _SignUpScreenState extends State<SignupScreen> {
                 ),
               ],
             ),
-            // Removed SingleChildScrollView to make the UI static
             child: Column(
-              mainAxisSize: MainAxisSize.min, // Shrink-wraps the white box to the content
+              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // TITLE SECTION

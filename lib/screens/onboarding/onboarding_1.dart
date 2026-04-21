@@ -91,7 +91,6 @@ class _Onboarding1State extends State<Onboarding1> {
               ],
             ),
 
-            // Fixed Bottom UI
             Positioned(
               bottom: 60,
               left: 0,
@@ -120,7 +119,6 @@ class _Onboarding1State extends State<Onboarding1> {
     );
   }
 
-  // UPDATED HELPER: Title now includes Letter Spacing
   Widget buildPage({required String title, required Widget description}) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 40),

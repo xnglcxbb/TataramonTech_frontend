@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-// Standalone Helper for the Top Bar
 Widget buildProfileHeader(BuildContext context, String title) {
   return Padding(
     padding: const EdgeInsets.symmetric(vertical: 10),
@@ -28,7 +27,6 @@ Widget buildProfileHeader(BuildContext context, String title) {
   );
 }
 
-// Standalone Helper for the White Body Container
 BoxDecoration profileContainerDecoration() {
   return const BoxDecoration(
     color: Colors.white,

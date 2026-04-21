@@ -432,7 +432,7 @@ class _HomeScreenState extends State<HomeScreen> {
         border: Border.all(color: const Color(0xFFCDD0EC), width: 0.5),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start, // Label stays at the start
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text("POS BREAKDOWN",
               style: TextStyle(
@@ -444,7 +444,7 @@ class _HomeScreenState extends State<HomeScreen> {
           // English Tags Centered
           Center(
             child: Wrap(
-              alignment: WrapAlignment.center, // Centers the pills
+              alignment: WrapAlignment.center,
               spacing: 15,
               runSpacing: 10,
               children: currentPosDataEnglish.map((item) => _TagUnit(item['tag']!, item['word']!, _getPosColor(item['tag']!), const Color(0xFF384087))).toList(),
@@ -459,7 +459,7 @@ class _HomeScreenState extends State<HomeScreen> {
           // Bikol Tags Centered
           Center(
             child: Wrap(
-              alignment: WrapAlignment.center, // Centers the pills
+              alignment: WrapAlignment.center,
               spacing: 15,
               runSpacing: 10,
               children: currentPosDataBikol.map((item) => _TagUnit(item['tag']!, item['word']!, _getPosColor(item['tag']!), const Color(0xFF384087))).toList(),
@@ -480,7 +480,7 @@ class _TagUnit extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.center, // Centers tag text over word text
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(label, style: TextStyle(fontSize: 10, color: labelColor, fontFamily: 'PoppinsSemiBold')),
         const SizedBox(height: 2),

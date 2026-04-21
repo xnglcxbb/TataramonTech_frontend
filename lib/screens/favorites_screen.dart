@@ -20,7 +20,6 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
   final String sharePrefix = "Check out this favorite translation!";
   final String emptyMessage = "No favorites yet";
 
-  // Helper for POS Tag colors to maintain consistency
   Color _getPosColor(String tag) {
     switch (tag.toLowerCase()) {
       case 'pron': return const Color(0xFFFFD54F);

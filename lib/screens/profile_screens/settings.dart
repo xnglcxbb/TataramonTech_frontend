@@ -12,12 +12,10 @@ class SettingsScreen extends StatelessWidget {
         bottom: false,
         child: Column(
           children: [
-            // 2. Using the shared public helper
             buildProfileHeader(context, "Settings"),
             Expanded(
               child: Container(
                 width: double.infinity,
-                // 3. Using the shared public decoration
                 decoration: profileContainerDecoration(),
                 child: ListView(
                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),

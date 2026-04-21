@@ -12,12 +12,10 @@ class AboutUsScreen extends StatelessWidget {
         bottom: false,
         child: Column(
           children: [
-            // 2. Call the shared helper (No underscore!)
             buildProfileHeader(context, "About Us"),
             Expanded(
               child: Container(
                 width: double.infinity,
-                // 3. Call the shared helper (No underscore!)
                 decoration: profileContainerDecoration(),
                 child: const Padding(
                   padding: EdgeInsets.all(40),
