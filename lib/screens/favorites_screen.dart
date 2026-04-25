@@ -122,7 +122,6 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
   }
 
   Widget _buildFavoriteCard(Map<String, dynamic> item, int index) {
-    // SAFETY GUARD: Handle cases where 'bk' might be a legacy String
     List<dynamic> bkWords;
     if (item['bk'] is String) {
       bkWords = [{"word": item['bk'], "tag": "Word"}];

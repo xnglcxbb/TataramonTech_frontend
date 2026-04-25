@@ -34,12 +34,37 @@ class HistoryScreen extends StatefulWidget {
 }
 
 class _HistoryScreenState extends State<HistoryScreen> {
+  bool _isSearching = false;
+  final TextEditingController _searchController = TextEditingController();
+  List<Map<String, dynamic>> _filteredItems = [];
+
   final String headerTitle = "History";
   final String sourceLanguageLabel = "English";
   final String targetLanguageLabel = "Bikol";
   final String copySuccessMessage = "Copied to Clipboard";
   final String shareSubject = "Bikol Translation";
   final String sharePrefix = "Check out this translation!";
+
+  @override
+  void initState(){
+    super.initState();
+    _filteredItems = List.from(historyItems);
+  }
+
+  void _runFilter(String query) {
+    setState(() {
+      if (query.isEmpty) {
+        _filteredItems = List.from(historyItems);
+      } else {
+        _filteredItems = historyItems.where(
+        (item) {
+          final english = item['en'].toString().toLowerCase();
+          final bikol = (item['bk'] as List).map((w) => w['word']).join(' ').toLowerCase();
+          return english.contains(query.toLowerCase()) || bikol.contains(query.toLowerCase());
+      }).toList();
+      }
+    });
+  }
 
   Color _getPosColor(String tag) {
     switch (tag.toLowerCase()) {
@@ -74,51 +99,115 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _buildSearchIcon(),
-              Text(
-                headerTitle,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontFamily: 'PoppinsBold',
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  shadows: [
-                    Shadow(
-                      color: Colors.black.withValues(alpha: 0.9),
-                      offset: const Offset(2, 2),
-                      blurRadius: 15,
+    return Scaffold(
+      backgroundColor: const Color(0xFF384087),
+      body: SafeArea(
+        bottom: false,
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Animated search bar container
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    width: _isSearching ? MediaQuery.of(context).size.width * 0.75 : 45,
+                    height: 45,
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    decoration: BoxDecoration(
+                      color: _isSearching
+                          ? Colors.white.withValues(alpha: 0.15)
+                          : Colors.transparent,
+                      borderRadius: BorderRadius.circular(20),
                     ),
-                  ],
+                    child: Row(
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _isSearching = !_isSearching;
+                              if (!_isSearching) {
+                                _searchController.clear();
+                                _runFilter('');
+                                FocusScope.of(context).unfocus();
+                              }
+                            });
+                          },
+                          child: _buildShadowedIcon(
+                            assetPath: 'assets/icons/Vector.svg',
+                            size: 28,
+                            iconColor: _isSearching ? const Color(0xFFFFD54F) : Colors.white,
+                          ),
+                        ),
+                        if (_isSearching)
+                          Expanded(
+                            child: TextField(
+                              controller: _searchController,
+                              onChanged: _runFilter,
+                              autofocus: true,
+                              cursorColor: Colors.white,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontFamily: 'PoppinsBold',
+                                fontSize: 18,
+                              ),
+                              decoration: const InputDecoration(
+                                hintText: "Search",
+                                hintStyle: TextStyle(color: Colors.white60),
+                                border: InputBorder.none,
+                                contentPadding: EdgeInsets.only(left: 10, bottom: 5),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+
+                  // Show "History" only when not searching
+                  if (!_isSearching)
+                    Expanded(
+                      child: Text(
+                        headerTitle,
+                        textAlign: TextAlign.end,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 24,
+                          fontFamily: 'PoppinsBold',
+                          shadows: [
+                            Shadow(
+                              color: Colors.black.withValues(alpha: 0.9),
+                              offset: const Offset(2, 2),
+                              blurRadius: 15,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: Container(
+                width: double.infinity,
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(50),
+                    topRight: Radius.circular(50),
+                  ),
+                ),
+                child: ListView.builder(
+                  padding: const EdgeInsets.only(top: 30, left: 40, right: 45, bottom: 20),
+                  itemCount: _filteredItems.length,
+                  itemBuilder: (context, index) => _buildDismissibleCard(index),
                 ),
               ),
-            ],
-          ),
-        ),
-        Expanded(
-          child: Container(
-            width: double.infinity,
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(50),
-                topRight: Radius.circular(50),
-              ),
             ),
-            child: ListView.builder(
-              padding: const EdgeInsets.only(top: 30, left: 40, right: 45, bottom: 100),
-              itemCount: historyItems.length,
-              itemBuilder: (context, index) => _buildDismissibleCard(index),
-            ),
-          ),
+          ],
         ),
-      ],
+      ),
     );
   }
 
@@ -245,7 +334,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     },
                     child: Icon(
                       isFavorited ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                      size: 20,
+                      size: 17,
                       color: isFavorited
                           ? const Color(0xFFFAD02C)
                           : const Color(0xFF384087).withValues(alpha: 0.5),
@@ -260,7 +349,13 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   const SizedBox(width: 14),
                   GestureDetector(
                     onTap: () => _shareContent(context, item['en']!, bkWords),
-                    child: _cardIcon(Icons.share_outlined),
+                    child: SizedBox(
+                      height: 14,
+                      width: 14,
+                      child: SvgPicture.asset(
+                        'assets/icons/share.svg',
+                      ),
+                    )
                   ),
                 ],
               ),
@@ -271,8 +366,16 @@ class _HistoryScreenState extends State<HistoryScreen> {
     );
   }
 
-  Widget _label(String text) => Text(text, style: const TextStyle(fontSize: 10, color: Color(0XFF7C83C4), fontFamily: 'PoppinsSemiBold'));
-  Widget _cardIcon(IconData icon) => Icon(icon, size: 20, color: const Color(0xFF384087).withValues(alpha: 0.5));
+  Widget _label(String text) => Text(text,
+      style: const TextStyle(
+          fontSize: 10,
+          color: Color(0XFF7C83C4),
+          fontFamily: 'PoppinsSemiBold'));
+
+  Widget _cardIcon(IconData icon) =>
+      Icon(
+          icon, size: 20,
+          color: const Color(0xFF384087).withValues(alpha: 0.5));
 
   Widget _buildDeleteBackground() {
     return Container(
@@ -284,21 +387,31 @@ class _HistoryScreenState extends State<HistoryScreen> {
     );
   }
 
-  Widget _buildSearchIcon() {
+  Widget _buildShadowedIcon({
+    required String assetPath,
+    double size = 30.0,
+    Color iconColor = Colors.white,
+    Color shadowColor = Colors.black,
+    double shadowOpacity = 0.9,
+    Offset shadowOffset = const Offset(2, 2),
+  }) {
     return Stack(
       children: [
         Transform.translate(
-          offset: const Offset(2, 2),
+          offset: shadowOffset,
           child: SvgPicture.asset(
-            'assets/icons/Vector.svg',
-            width: 30,
-            colorFilter: ColorFilter.mode(Colors.black.withValues(alpha: 0.9), BlendMode.srcIn),
+            assetPath,
+            width: size,
+            colorFilter: ColorFilter.mode(
+              shadowColor.withValues(alpha: shadowOpacity),
+              BlendMode.srcIn,
+            ),
           ),
         ),
         SvgPicture.asset(
-          'assets/icons/Vector.svg',
-          width: 30,
-          colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+          assetPath,
+          width: size,
+          colorFilter: ColorFilter.mode(iconColor, BlendMode.srcIn),
         ),
       ],
     );

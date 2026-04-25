@@ -36,12 +36,12 @@ class SettingsScreen extends StatelessWidget {
                     ),
                     const Divider(height: 1),
                     ListTile(
-                      leading: const Icon(Icons.delete_sweep_outlined, color: Colors.redAccent),
+                      leading: const Icon(Icons.delete_outlined, color: Color(0xFF384087)),
                       title: const Text(
                         "Clear History",
                         style: TextStyle(
                           fontFamily: 'PoppinsMedium',
-                          color: Colors.redAccent,
+                          color: Color(0xFF384087),
                         ),
                       ),
                       onTap: () {

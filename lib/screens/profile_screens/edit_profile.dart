@@ -123,7 +123,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             decoration: BoxDecoration(
               color: const Color(0xFFCDD0EC),
               shape: BoxShape.circle,
-              // Use boxShadow for the Container
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.15),
@@ -164,12 +163,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         ),
         const SizedBox(height: 8),
         Container(
-          // 1. Set the desired height here
           height: 45,
           padding: const EdgeInsets.symmetric(horizontal: 20),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(15),
+            borderRadius: BorderRadius.circular(20),
             border: Border.all(color: const Color(0xFFCDD0EC)),
             boxShadow: [
               BoxShadow(
@@ -243,7 +241,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           decoration: BoxDecoration(
             boxShadow: [
               BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
+                  color: Colors.black.withValues(alpha: 0.08),
                   blurRadius: 10,
                   offset: const Offset(0, 4))
             ],
@@ -262,7 +260,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
 
               enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(15),
+                  borderRadius: BorderRadius.circular(20),
                   borderSide: const BorderSide(color: Color(0xFFCDD0EC))
               ),
               focusedBorder: OutlineInputBorder(
