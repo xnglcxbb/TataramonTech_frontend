@@ -12,8 +12,6 @@ dependencies:
   share_plus: ^10.1.4
   http: ^1.6.0
 
-  # ── Added for API calls ──────────────────────────────────────
-  http: ^1.2.0
 
   # ── Existing packages ────────────────────────────────────────
   share_plus: ^10.1.4
