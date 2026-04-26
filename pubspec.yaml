@@ -1,8 +1,6 @@
 name: soft_eng_projects
 description: "A new Flutter project."
-
 publish_to: 'none'
-
 version: 1.0.0+1
 
 environment:
@@ -14,41 +12,39 @@ dependencies:
   share_plus: ^10.1.4
   http: ^1.6.0
 
+  # ── Added for API calls ──────────────────────────────────────
+  http: ^1.2.0
+
+  # ── Existing packages ────────────────────────────────────────
+  share_plus: ^10.1.4
   flutter_svg: ^2.0.10
   cupertino_icons: ^1.0.8
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
   flutter_lints: ^6.0.0
 
 flutter:
   uses-material-design: true
 
-  # ASSETS (for your SVG icons)
   assets:
     - assets/icons/
     - assets/images/
 
-  # FONTS
   fonts:
     - family: Poppins
       fonts:
         - asset: fonts/Poppins-Regular.ttf
-
     - family: Lemon
       fonts:
         - asset: fonts/Lemon-Regular.ttf
-
     - family: PoppinsMedium
       fonts:
         - asset: fonts/Poppins-Medium.ttf
-
     - family: PoppinsSemiBold
       fonts:
         - asset: fonts/Poppins-SemiBold.ttf
-
     - family: PoppinsBold
       fonts:
         - asset: fonts/Poppins-Bold.ttf

@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter/services.dart';
 import 'package:share_plus/share_plus.dart';
+import '../services/translation_service.dart';
 import 'history_screen.dart';
 import 'favorites_screen.dart';
 import 'profile_screen.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 
 class HomeScreen extends StatefulWidget {
   final String userName;
@@ -21,6 +20,11 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentNavIndex = 0;
   String translatedText = "";
   bool showBreakdown = false;
+  bool isLoading = false;        // ← NEW: loading state
+  String? errorMessage;          // ← NEW: error message
+
+  // Direction toggle: true = eng→bcl, false = bcl→eng
+  bool isEngToBcl = true;        // ← NEW: direction state
 
   List<Map<String, String>> currentPosDataBikol = [];
   List<Map<String, String>> currentPosDataEnglish = [];
@@ -47,22 +51,101 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Future translate(String sl) async {
-    final response = await http.get(Uri.parse('http://192.168.254.103:2737/translate?q=$sl&langpair=eng|bcl'));
-    final data = jsonDecode(response.body);
-
-    if (response.statusCode == 200) {
-      return data['responseData']['translatedText'];
-    }
-    else{
-      throw Exception('Failed to load post');
+  // ── Convert API pos tag to display label ──────────────────
+  String _posToLabel(String pos) {
+    switch (pos.toLowerCase()) {
+      case 'n': return 'Noun';
+      case 'v':
+      case 'vblex': return 'Verb';
+      case 'prn': return 'Pron';
+      case 'adj': return 'Adj';
+      case 'adv': return 'Adv';
+      case 'pr': return 'Prep';
+      case 'det': return 'Det';
+      default: return pos.toUpperCase();
     }
   }
 
-  void _handleTranslateAction() async {
-    String result = await translate(_inputController.text);
+  // ── Main translate action — now calls real API ────────────
+  Future<void> _handleTranslateAction() async {
+    if (_inputController.text.isEmpty) return;
+
     setState(() {
-      translatedText = result;
+      isLoading = true;
+      errorMessage = null;
+      showBreakdown = false;
+      translatedText = "";
+    });
+
+    try {
+      final direction = isEngToBcl ? 'eng-bcl' : 'bcl-eng';
+      final rawText = _inputController.text.trim();
+      final inputText = rawText.isNotEmpty
+          ? rawText[0].toUpperCase() + rawText.substring(1)
+          : rawText;
+
+      // Call real API with POS tags
+      final result = await TranslationService.translateWithPos(
+        text: inputText,
+        direction: direction,
+      );
+
+      // Build POS tag lists from API response
+      final List<Map<String, String>> inputTags = result.posTags
+          .map((tag) => {'word': tag.word, 'tag': _posToLabel(tag.pos)})
+          .toList();
+
+      // For output POS — run reverse morph on translated text
+      final outputResult = await TranslationService.translateWithPos(
+        text: result.output.replaceAll('*', ''),
+        direction: isEngToBcl ? 'bcl-eng' : 'eng-bcl',
+      );
+
+      final List<Map<String, String>> outputTags = outputResult.posTags
+          .map((tag) => {'word': tag.word, 'tag': _posToLabel(tag.pos)})
+          .toList();
+
+      setState(() {
+        isLoading = false;
+        showBreakdown = true;
+        translatedText = result.output.replaceAll('*', '');
+
+        if (isEngToBcl) {
+          currentPosDataEnglish = inputTags;
+          currentPosDataBikol = outputTags.isNotEmpty ? outputTags : [
+            {'word': result.output, 'tag': 'Word'}
+          ];
+        } else {
+          currentPosDataBikol = inputTags;
+          currentPosDataEnglish = outputTags.isNotEmpty ? outputTags : [
+            {'word': result.output, 'tag': 'Word'}
+          ];
+        }
+
+        // Add to history
+        historyItems.insert(0, {
+          "en": inputText,
+          "bk": currentPosDataBikol,
+          "type": "Sentence"
+        });
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+        errorMessage = "Could not connect to server.\nMake sure the API is running.";
+        showBreakdown = false;
+      });
+    }
+  }
+
+  // ── Toggle direction ──────────────────────────────────────
+  void _toggleDirection() {
+    setState(() {
+      isEngToBcl = !isEngToBcl;
+      _inputController.clear();
+      translatedText = "";
+      showBreakdown = false;
+      errorMessage = null;
     });
   }
 
@@ -163,7 +246,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   const SizedBox(height: 30),
 
                   _buildTranslationCard(
-                    label: "English",
+                    label: isEngToBcl ? "English" : "Bikol",
                     isInput: true,
                     controller: _inputController,
                     hint: "Type text here...",
@@ -172,6 +255,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         setState(() {
                           showBreakdown = false;
                           translatedText = "";
+                          errorMessage = null;
                         });
                       }
                     },
@@ -179,17 +263,57 @@ class _HomeScreenState extends State<HomeScreen> {
 
                   const SizedBox(height: 20),
 
+                  // ── Error message ────────────────────────
+                  if (errorMessage != null)
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(12),
+                      margin: const EdgeInsets.only(bottom: 12),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFFEBEE),
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.error_outline,
+                              color: Colors.red, size: 18),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              errorMessage!,
+                              style: const TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 12,
+                                  fontFamily: 'Poppins'),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                  // ── Translate button ─────────────────────
                   GestureDetector(
-                    onTap: _handleTranslateAction,
+                    onTap: isLoading ? null : _handleTranslateAction,
                     child: Container(
                       width: double.infinity,
                       height: 50,
                       decoration: BoxDecoration(
-                        color: const Color(0xFF384087),
+                        color: isLoading
+                            ? const Color(0xFF384087).withValues(alpha: 0.6)
+                            : const Color(0xFF384087),
                         borderRadius: BorderRadius.circular(20),
                       ),
-                      child: const Center(
-                        child: Text(
+                      child: Center(
+                        child: isLoading
+                            ? const SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2.5,
+                          ),
+                        )
+                            : const Text(
                           "Translate",
                           style: TextStyle(
                             color: Colors.white,
@@ -204,9 +328,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   const SizedBox(height: 20),
 
                   _buildTranslationCard(
-                    label: "Bikol",
+                    label: isEngToBcl ? "Bikol" : "English",
                     isInput: false,
-                    text: translatedText.isEmpty ? "Translation will appear here" : translatedText,
+                    text: translatedText.isEmpty
+                        ? "Translation will appear here"
+                        : translatedText,
                     isPlaceholder: translatedText.isEmpty,
                   ),
 
@@ -249,28 +375,36 @@ class _HomeScreenState extends State<HomeScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Text('English',
-            style: TextStyle(
-                fontSize: 24,
-                color: Color(0xFF384087),
-                fontFamily: 'PoppinsBold')),
-        const SizedBox(width: 15),
-        Container(
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(color: const Color(0xFFE5E8FF), width: 1.5),
-          ),
-          child: const Icon(
-              Icons.swap_horiz_outlined,
-              color: Color(0xFF384087), size: 30),
+        Text(
+          isEngToBcl ? 'English' : 'Bikol',
+          style: const TextStyle(
+              fontSize: 24,
+              color: Color(0xFF384087),
+              fontFamily: 'PoppinsBold'),
         ),
         const SizedBox(width: 15),
-        const Text('Bikol',
-            style: TextStyle(
-                fontSize: 24,
-                color: Color(0xFF384087),
-                fontFamily: 'PoppinsBold')),
+        // ── Swap button now actually toggles direction ──────
+        GestureDetector(
+          onTap: _toggleDirection,
+          child: Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: const Color(0xFFE5E8FF), width: 1.5),
+            ),
+            child: const Icon(
+                Icons.swap_horiz_outlined,
+                color: Color(0xFF384087), size: 30),
+          ),
+        ),
+        const SizedBox(width: 15),
+        Text(
+          isEngToBcl ? 'Bikol' : 'English',
+          style: const TextStyle(
+              fontSize: 24,
+              color: Color(0xFF384087),
+              fontFamily: 'PoppinsBold'),
+        ),
       ],
     );
   }
@@ -308,9 +442,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       controller?.clear();
                       translatedText = "";
                       showBreakdown = false;
+                      errorMessage = null;
                     });
                   },
-                  child: const Icon(Icons.close_rounded, size: 16, color: Color(0xFF7C83C4)),
+                  child: const Icon(Icons.close_rounded,
+                      size: 16, color: Color(0xFF7C83C4)),
                 ),
             ],
           ),
@@ -321,7 +457,8 @@ class _HomeScreenState extends State<HomeScreen> {
             onChanged: onChanged,
             style: const TextStyle(
                 color: Color(0xFF1D213B),
-                fontSize: 16, fontFamily: 'Poppins'),
+                fontSize: 16,
+                fontFamily: 'Poppins'),
             decoration: InputDecoration(
               hintText: hint,
               hintStyle: TextStyle(
@@ -335,29 +472,30 @@ class _HomeScreenState extends State<HomeScreen> {
               : Text(
             text ?? "",
             style: TextStyle(
-                color: isPlaceholder ? const Color(0xFF384087).withValues(alpha: 0.3) : const Color(0xFF1D213B),
+                color: isPlaceholder
+                    ? const Color(0xFF384087).withValues(alpha: 0.3)
+                    : const Color(0xFF1D213B),
                 fontSize: 16,
-                fontFamily: 'Poppins'
-            ),
+                fontFamily: 'Poppins'),
           ),
           const SizedBox(height: 12),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              // --- FAVORITE FUNCTIONALITY ---
               GestureDetector(
                 onTap: () {
-                  if (translatedText.isNotEmpty && !isInput && !isPlaceholder) {
+                  if (translatedText.isNotEmpty &&
+                      !isInput &&
+                      !isPlaceholder) {
                     setState(() {
-                      bool alreadyExists = favoriteItems.any((item) => item['en'] == _inputController.text);
-
+                      bool alreadyExists = favoriteItems
+                          .any((item) => item['en'] == _inputController.text);
                       if (!alreadyExists) {
                         favoriteItems.add({
                           "en": _inputController.text,
                           "bk": currentPosDataBikol,
                           "type": "Sentence"
                         });
-
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text("Added to Favorites"),
@@ -370,24 +508,28 @@ class _HomeScreenState extends State<HomeScreen> {
                   }
                 },
                 child: Icon(
-                  favoriteItems.any((item) => item['en'] == _inputController.text && _inputController.text.isNotEmpty)
+                  favoriteItems.any((item) =>
+                  item['en'] == _inputController.text &&
+                      _inputController.text.isNotEmpty)
                       ? Icons.favorite_rounded
                       : Icons.favorite_border_outlined,
                   size: 15,
-                  color: favoriteItems.any((item) => item['en'] == _inputController.text && _inputController.text.isNotEmpty)
+                  color: favoriteItems.any((item) =>
+                  item['en'] == _inputController.text &&
+                      _inputController.text.isNotEmpty)
                       ? const Color(0xFFFAD02C)
                       : const Color(0xFF384087),
                 ),
               ),
               const SizedBox(width: 18),
-
-              // --- COPY FUNCTIONALITY ---
               GestureDetector(
                 onTap: () {
                   if (text != null && !isPlaceholder) {
                     Clipboard.setData(ClipboardData(text: text)).then((_) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("Copied to clipboard"), duration: Duration(seconds: 1)),
+                        const SnackBar(
+                            content: Text("Copied to clipboard"),
+                            duration: Duration(seconds: 1)),
                       );
                     });
                   }
@@ -395,8 +537,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: _cardAction(Icons.copy_rounded),
               ),
               const SizedBox(width: 18),
-
-              // --- SHARE FUNCTIONALITY ---
               GestureDetector(
                 onTap: () {
                   if (text != null && !isPlaceholder) {
@@ -412,7 +552,8 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _cardAction(IconData icon) => Icon(icon, size: 15, color: const Color(0xFF384087));
+  Widget _cardAction(IconData icon) =>
+      Icon(icon, size: 15, color: const Color(0xFF384087));
 
   Widget _buildPosBreakdown() {
     return Container(
@@ -433,28 +574,42 @@ class _HomeScreenState extends State<HomeScreen> {
                   fontFamily: 'PoppinsSemiBold')),
           const SizedBox(height: 20),
 
-          // English Tags Centered
           Center(
             child: Wrap(
               alignment: WrapAlignment.center,
               spacing: 15,
               runSpacing: 10,
-              children: currentPosDataEnglish.map((item) => _TagUnit(item['tag']!, item['word']!, _getPosColor(item['tag']!), const Color(0xFF384087))).toList(),
+              children: currentPosDataEnglish
+                  .map((item) => _TagUnit(
+                item['tag']!,
+                item['word']!,
+                _getPosColor(item['tag']!),
+                const Color(0xFF384087),
+              ))
+                  .toList(),
             ),
           ),
 
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 12),
-            child: Divider(color: const Color(0xFF384087).withValues(alpha: 0.08), thickness: 1),
+            child: Divider(
+                color: const Color(0xFF384087).withValues(alpha: 0.08),
+                thickness: 1),
           ),
 
-          // Bikol Tags Centered
           Center(
             child: Wrap(
               alignment: WrapAlignment.center,
               spacing: 15,
               runSpacing: 10,
-              children: currentPosDataBikol.map((item) => _TagUnit(item['tag']!, item['word']!, _getPosColor(item['tag']!), const Color(0xFF384087))).toList(),
+              children: currentPosDataBikol
+                  .map((item) => _TagUnit(
+                item['tag']!,
+                item['word']!,
+                _getPosColor(item['tag']!),
+                const Color(0xFF384087),
+              ))
+                  .toList(),
             ),
           ),
         ],
@@ -474,9 +629,17 @@ class _TagUnit extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Text(label, style: TextStyle(fontSize: 10, color: labelColor, fontFamily: 'PoppinsSemiBold')),
+        Text(label,
+            style: TextStyle(
+                fontSize: 10,
+                color: labelColor,
+                fontFamily: 'PoppinsSemiBold')),
         const SizedBox(height: 2),
-        Text(word, style: TextStyle(fontSize: 13, color: wordColor, fontFamily: 'PoppinsMedium')),
+        Text(word,
+            style: TextStyle(
+                fontSize: 13,
+                color: wordColor,
+                fontFamily: 'PoppinsMedium')),
       ],
     );
   }
