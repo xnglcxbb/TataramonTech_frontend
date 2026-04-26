@@ -5,6 +5,8 @@ import 'package:share_plus/share_plus.dart';
 import 'history_screen.dart';
 import 'favorites_screen.dart';
 import 'profile_screen.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class HomeScreen extends StatefulWidget {
   final String userName;
@@ -45,32 +47,22 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  void _handleTranslateAction() {
-    if (_inputController.text.isEmpty) return;
+  Future translate(String sl) async {
+    final response = await http.get(Uri.parse('http://192.168.254.103:2737/translate?q=$sl&langpair=eng|bcl'));
+    final data = jsonDecode(response.body);
 
+    if (response.statusCode == 200) {
+      return data['responseData']['translatedText'];
+    }
+    else{
+      throw Exception('Failed to load post');
+    }
+  }
+
+  void _handleTranslateAction() async {
+    String result = await translate(_inputController.text);
     setState(() {
-      showBreakdown = true;
-      translatedText = "Nagkakaon ako nin tinapay";
-
-      currentPosDataEnglish = [
-        {"word": "I", "tag": "Pron"},
-        {"word": "am", "tag": "Verb"},
-        {"word": "eating", "tag": "Verb"},
-        {"word": "bread", "tag": "Noun"},
-      ];
-
-      currentPosDataBikol = [
-        {"word": "Nagkakaon", "tag": "Verb"},
-        {"word": "ako", "tag": "Pron"},
-        {"word": "nin", "tag": "Verb"},
-        {"word": "tinapay", "tag": "Noun"},
-      ];
-
-      historyItems.insert(0, {
-        "en": _inputController.text,
-        "bk": currentPosDataBikol,
-        "type": "Sentence"
-      });
+      translatedText = result;
     });
   }
 
