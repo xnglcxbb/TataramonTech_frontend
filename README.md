@@ -94,7 +94,7 @@ This repository contains the **frontend UI/UX implementation** of TataramonTech 
 
 ```bash
 # Clone repository
-git clone https://github.com/your-username/tataramontech-frontend.git
+git clone https://github.com/xnglcxbb/Tataramontech_frontend.git
 
 # Go to project folder
 cd tataramontech-frontend
