@@ -70,13 +70,7 @@ This repository contains the **frontend UI/UX implementation** of TataramonTech 
 
 *(Update based on your actual tools)*
 
-* Frontend Framework: React / Flutter / etc.
-* Styling: CSS / Tailwind / Material UI
-* State Management: (if applicable)
-
-## 📷 Screens
-
-*(Insert screenshots here)*
+* Frontend Framework: Flutter and Android Studio
 
 * Home Page
 * Translation Screen
