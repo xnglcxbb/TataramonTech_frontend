@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../login_screen.dart';
+//import '../login_screen.dart';
 
 class Onboarding1 extends StatefulWidget {
   const Onboarding1({super.key});
@@ -12,12 +12,12 @@ class _Onboarding1State extends State<Onboarding1> {
   final PageController _controller = PageController();
   int _currentPage = 0;
 
-  void _goToLogin() {
+  /*void _goToLogin() {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (_) => const LoginScreen()),
     );
-  }
+  }*/
 
   void _nextPage() {
     if (_currentPage < 2) {
@@ -25,9 +25,9 @@ class _Onboarding1State extends State<Onboarding1> {
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
       );
-    } else {
+    } /*else {
       _goToLogin();
-    }
+    }*/
   }
 
   @override
@@ -161,7 +161,7 @@ class _Onboarding1State extends State<Onboarding1> {
                 // Skip button (only on pages 0 and 1)
                 if (_currentPage < 2)
                   GestureDetector(
-                    onTap: _goToLogin,
+                    //onTap: _goToLogin,
                     child: const Text(
                       'Skip',
                       style: TextStyle(
