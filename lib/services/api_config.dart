@@ -8,6 +8,9 @@ class ApiConfig {
 
   // ANDROID STUDIO EMULATOR (flutter run → pick emulator)
   //static const String baseUrl = 'http://10.0.2.2:8000';
+  // ── Local testing (Android Emulator) ──────────────────────
+  // 10.0.2.2 is the special IP that points to your PC's localhost
+  //static const String baseUrl = 'http://10.0.2.2:8000';
 
   // REAL ANDROID DEVICE (phone on same WiFi)
   // ── When testing on a real Android device on the same WiFi ──
