@@ -88,7 +88,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     historyItems.insert(0, {
       "en": _inputController.text,
-      "bk": [{"word": result, "tag": "Word"}], // basic single-word entry
+      "bk": [{"word": result, "tag": "Word"}],
       "type": "Sentence",
     });
   }

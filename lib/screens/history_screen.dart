@@ -192,15 +192,21 @@ class _HistoryScreenState extends State<HistoryScreen> {
   }
 
   Widget _buildDismissibleCard(int index) {
-    final item = historyItems[index];
+    final item = _filteredItems[index];
     return Dismissible(
       key: Key('${item['en']}_$index'),
       direction: DismissDirection.endToStart,
-      onDismissed: (direction) => setState(() => historyItems.removeAt(index)),
+      onDismissed: (direction) {
+      setState(() {
+        historyItems.removeWhere((e) => e['en'] == item['en']);
+        _filteredItems.removeAt(index);
+      });
+    },
       background: _buildDeleteBackground(),
       child: _buildHistoryCard(item),
     );
   }
+
 
   Widget _buildHistoryCard(Map<String, dynamic> item) {
     bool isFavorited = favoriteItems.any((element) => element['en'] == item['en']);
