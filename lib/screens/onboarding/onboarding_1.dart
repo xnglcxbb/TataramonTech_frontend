@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../login_screen.dart';
+import '../home_screen.dart';
 
 class Onboarding1 extends StatefulWidget {
   const Onboarding1({super.key});
@@ -22,7 +22,7 @@ class _Onboarding1State extends State<Onboarding1> {
           if (_currentPage == 2) {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (_) => const LoginScreen()),
+              MaterialPageRoute(builder: (_) => const HomeScreen()),
             );
           }
         },

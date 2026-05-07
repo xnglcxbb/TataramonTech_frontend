@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'profile_screens/account_details.dart';
-import 'profile_screens/privacy.dart';
+//import 'profile_screens/account_details.dart';
+//import 'profile_screens/privacy.dart';
 import 'profile_screens/settings.dart';
 import 'profile_screens/about_us.dart';
 
@@ -18,7 +18,7 @@ class ProfileScreen extends StatelessWidget {
             alignment: Alignment.center,
             children: [
               Text(
-                'Profile',
+                'App info',
                 style: TextStyle(
                   color: Colors.white,
                   fontFamily: 'PoppinsBold',
@@ -53,7 +53,7 @@ class ProfileScreen extends StatelessWidget {
               child: Column(
                 children: [
                   // Profile Picture Section
-                  const CircleAvatar(
+                  /*const CircleAvatar(
                     radius: 50,
                     backgroundColor: Color(0xFFF0F2FF),
                     child: Icon(Icons.person, size: 30, color: Color(0xFF384087)),
@@ -82,11 +82,11 @@ class ProfileScreen extends StatelessWidget {
                         color: Color(0xFFAFB5EB),
                         fontFamily: 'PoppinsMedium'
                     ),
-                  ),
+                  ),*/
                   const SizedBox(height: 40),
 
-                  // --- CONNECTED BUTTONS ---
-                  _buildProfileItem(
+                   //--- CONNECTED BUTTONS ---
+                  /*_buildProfileItem(
                     Icons.person_outline,
                     "Account Details",
                         () => Navigator.push(
@@ -101,7 +101,7 @@ class ProfileScreen extends StatelessWidget {
                       context,
                       MaterialPageRoute(builder: (context) => const PrivacyScreen()),
                     ),
-                  ),
+                  ), */
                   _buildProfileItem(
                     Icons.settings,
                     "Settings",
@@ -122,7 +122,7 @@ class ProfileScreen extends StatelessWidget {
                   const SizedBox(height: 30),
 
                   // Logout Button
-                  SizedBox(
+                  /*SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () {
@@ -144,7 +144,7 @@ class ProfileScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                  ),
+                  ),*/
                 ],
               ),
             ),
