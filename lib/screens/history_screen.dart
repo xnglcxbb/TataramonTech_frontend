@@ -4,27 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:share_plus/share_plus.dart';
 
 List<Map<String, dynamic>> favoriteItems = [];
-List<Map<String, dynamic>> historyItems = [
-  {
-    "en": "I am eating bread",
-    "bk": [
-      {"word": "Nagkakaon", "tag": "Verb"},
-      {"word": "ako", "tag": "Pron"},
-      {"word": "nin", "tag": "Verb"},
-      {"word": "tinapay", "tag": "Noun"},
-    ],
-    "type": "Sentence"
-  },
-  {
-    "en": "Good morning",
-    "bk": [
-      {"word": "Marhay", "tag": "Adj"},
-      {"word": "na", "tag": "Part"},
-      {"word": "aga", "tag": "Noun"},
-    ],
-    "type": "Greeting"
-  },
-];
+List<Map<String, dynamic>> historyItems = [];
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
@@ -212,15 +192,21 @@ class _HistoryScreenState extends State<HistoryScreen> {
   }
 
   Widget _buildDismissibleCard(int index) {
-    final item = historyItems[index];
+    final item = _filteredItems[index];
     return Dismissible(
       key: Key('${item['en']}_$index'),
       direction: DismissDirection.endToStart,
-      onDismissed: (direction) => setState(() => historyItems.removeAt(index)),
+      onDismissed: (direction) {
+      setState(() {
+        historyItems.removeWhere((e) => e['en'] == item['en']);
+        _filteredItems.removeAt(index);
+      });
+    },
       background: _buildDeleteBackground(),
       child: _buildHistoryCard(item),
     );
   }
+
 
   Widget _buildHistoryCard(Map<String, dynamic> item) {
     bool isFavorited = favoriteItems.any((element) => element['en'] == item['en']);
@@ -248,21 +234,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               _label(sourceLanguageLabel),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF384087).withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  item['type'] ?? 'Word',
-                  style: const TextStyle(
-                    color: Color(0xFF384087),
-                    fontFamily: 'PoppinsSemiBold',
-                    fontSize: 9,
-                  ),
-                ),
-              ),
             ],
           ),
           const SizedBox(height: 2),
@@ -296,14 +267,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text(
-                              w['tag'] ?? "Word",
-                              style: TextStyle(
-                                fontSize: 9,
-                                fontFamily: 'PoppinsBold',
-                                color: _getPosColor(w['tag'] ?? "Word"),
-                              ),
-                            ),
                             Text(
                               w['word'] ?? "",
                               style: const TextStyle(

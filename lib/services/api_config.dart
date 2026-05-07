@@ -4,7 +4,7 @@ class ApiConfig {
   // ─────────────────────────────────────────────────────────
 
   // CHROME TESTING (flutter run → pick Chrome)
-  static const String baseUrl = 'http://localhost:8000';
+  static const String baseUrl = 'http://172.29.204.223:8000';
 
   // ANDROID STUDIO EMULATOR (flutter run → pick emulator)
   //static const String baseUrl = 'http://10.0.2.2:8000';
