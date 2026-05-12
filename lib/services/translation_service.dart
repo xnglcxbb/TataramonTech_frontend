@@ -117,7 +117,7 @@ class TranslationService {
   static Future<bool> checkHealth() async {
     try {
       final response = await http
-          .get(Uri.parse(ApiConfig.health))
+          .get(Uri.parse(ApiConfig.health), headers: {'ngrok-skip-browser-warning': 'true', 'User-Agent': 'TataramonTechApp'})
           .timeout(_timeout);
       return response.statusCode == 200;
     } catch (_) {
@@ -134,7 +134,7 @@ class TranslationService {
       final uri = Uri.parse(ApiConfig.translate).replace(
         queryParameters: {'text': text, 'direction': direction},
       );
-      final response = await http.get(uri).timeout(_timeout);
+      final response = await http.get(uri, headers: {'ngrok-skip-browser-warning': 'true', 'User-Agent': 'TataramonTechApp'}).timeout(_timeout);
 
       if (response.statusCode == 200) {
         return TranslationResult.fromJson(jsonDecode(response.body));
@@ -155,7 +155,7 @@ class TranslationService {
       final uri = Uri.parse(ApiConfig.translatePos).replace(
         queryParameters: {'text': text, 'direction': direction},
       );
-      final response = await http.get(uri).timeout(_timeout);
+      final response = await http.get(uri, headers: {'ngrok-skip-browser-warning': 'true', 'User-Agent': 'TataramonTechApp'}).timeout(_timeout);
 
       if (response.statusCode == 200) {
         return TranslationWithPos.fromJson(jsonDecode(response.body));
@@ -197,7 +197,7 @@ class TranslationService {
       final uri = Uri.parse(ApiConfig.phrasebook).replace(
         queryParameters: {'category': category},
       );
-      final response = await http.get(uri).timeout(_timeout);
+      final response = await http.get(uri, headers: {'ngrok-skip-browser-warning': 'true', 'User-Agent': 'TataramonTechApp'}).timeout(_timeout);
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);

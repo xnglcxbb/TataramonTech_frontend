@@ -4,7 +4,9 @@ class ApiConfig {
   // ─────────────────────────────────────────────────────────
 
   // CHROME TESTING (flutter run → pick Chrome)
-  static const String baseUrl = 'http://172.29.204.223:8000';
+  //static const String baseUrl = 'http://172.29.204.223:8000';
+  //static const String baseUrl = 'http://localhost:8000';
+  //static const String baseUrl = 'http://172.21.112.1:8000';
 
   // ANDROID STUDIO EMULATOR (flutter run → pick emulator)
   //static const String baseUrl = 'http://10.0.2.2:8000';
@@ -16,6 +18,10 @@ class ApiConfig {
   // ── When testing on a real Android device on the same WiFi ──
   // Replace with your PC's local IP (run `ipconfig` in Windows to find it)
   // static const String baseUrl = 'http://192.168.1.XXX:8000';
+   //static const String baseUrl = 'http://192.168.254.101:8000';
+
+   // NGROK — works on any phone, anywhere
+  static const String baseUrl = 'https://dash-suing-stowing.ngrok-free.dev';
   
 
   // ── Endpoints ─────────────────────────────────────────────

@@ -6,8 +6,6 @@ import '../services/translation_service.dart';
 import 'history_screen.dart';
 import 'favorites_screen.dart';
 import 'profile_screen.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 
 class HomeScreen extends StatefulWidget {
   final String userName;
@@ -22,11 +20,11 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentNavIndex = 0;
   String translatedText = "";
   bool showBreakdown = false;
-  /*bool isLoading = false;        // ← NEW: loading state
+  bool isLoading = false;        // ← NEW: loading state
   String? errorMessage;          // ← NEW: error message
 
   // Direction toggle: true = eng→bcl, false = bcl→eng
-  bool isEngToBcl = true;        // ← NEW: direction state*/
+  bool isEngToBcl = true;        // ← NEW: direction state
 
   List<Map<String, String>> currentPosDataBikol = [];
   List<Map<String, String>> currentPosDataEnglish = [];
@@ -54,7 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   // ── Convert API pos tag to display label ──────────────────
-  /*String _posToLabel(String pos) {
+  String _posToLabel(String pos) {
     switch (pos.toLowerCase()) {
       case 'n': return 'Noun';
       case 'v':
@@ -66,35 +64,10 @@ class _HomeScreenState extends State<HomeScreen> {
       case 'det': return 'Det';
       default: return pos.toUpperCase();
     }
-  }*/
-
-    Future translate(String sl) async {
-    final response = await http.get(Uri.parse('http://192.168.254.103:2737/translate?q=$sl&langpair=eng|bcl'));
-    final data = jsonDecode(response.body);
-
-    if (response.statusCode == 200) {
-      return data['responseData']['translatedText'];
-    }
-    else{
-      throw Exception('Failed to load post');
-    }
-  }
-
-  void _handleTranslateAction() async {
-    String result = await translate(_inputController.text);
-    setState(() {
-      translatedText = result;
-    });
-
-    historyItems.insert(0, {
-      "en": _inputController.text,
-      "bk": [{"word": result, "tag": "Word"}],
-      "type": "Sentence",
-    });
   }
 
   // ── Main translate action — now calls real API ────────────
-  /* Future<void> _handleTranslateAction() async {
+  Future<void> _handleTranslateAction() async {
     if (_inputController.text.isEmpty) return;
 
     setState(() {
@@ -174,7 +147,7 @@ class _HomeScreenState extends State<HomeScreen> {
       showBreakdown = false;
       errorMessage = null;
     });
-  } */
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -273,7 +246,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   const SizedBox(height: 30),
 
                   _buildTranslationCard(
-                    label: "English",
+                    label: isEngToBcl ? "English" : "Bikol",
                     isInput: true,
                     controller: _inputController,
                     hint: "Type text here...",
@@ -282,6 +255,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         setState(() {
                           showBreakdown = false;
                           translatedText = "";
+                          errorMessage = null;
                         });
                       }
                     },
@@ -290,7 +264,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   const SizedBox(height: 20),
 
                   // ── Error message ────────────────────────
-                  /* if (errorMessage != null)
+                  if (errorMessage != null)
                     Container(
                       width: double.infinity,
                       padding: const EdgeInsets.all(12),
@@ -315,20 +289,31 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ],
                       ),
-                    ),*/
+                    ),
 
                   // ── Translate button ─────────────────────
                   GestureDetector(
-                    onTap: _handleTranslateAction,
+                    onTap: isLoading ? null : _handleTranslateAction,
                     child: Container(
                       width: double.infinity,
                       height: 50,
                       decoration: BoxDecoration(
-                        color: const Color(0xFF384087),
+                        color: isLoading
+                            ? const Color(0xFF384087).withValues(alpha: 0.6)
+                            : const Color(0xFF384087),
                         borderRadius: BorderRadius.circular(20),
                       ),
-                      child: const Center(
-                        child: Text(
+                      child: Center(
+                        child: isLoading
+                            ? const SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2.5,
+                          ),
+                        )
+                            : const Text(
                           "Translate",
                           style: TextStyle(
                             color: Colors.white,
@@ -339,12 +324,15 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                   ),
+
                   const SizedBox(height: 20),
 
                   _buildTranslationCard(
-                    label: "Bikol",
+                    label: isEngToBcl ? "Bikol" : "English",
                     isInput: false,
-                    text: translatedText.isEmpty ? "Translation will appear here" : translatedText,
+                    text: translatedText.isEmpty
+                        ? "Translation will appear here"
+                        : translatedText,
                     isPlaceholder: translatedText.isEmpty,
                   ),
 
@@ -387,28 +375,36 @@ class _HomeScreenState extends State<HomeScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Text('English',
-            style: TextStyle(
-                fontSize: 24,
-                color: Color(0xFF384087),
-                fontFamily: 'PoppinsBold')),
-        const SizedBox(width: 15),
-        Container(
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(color: const Color(0xFFE5E8FF), width: 1.5),
-          ),
-          child: const Icon(
-              Icons.swap_horiz_outlined,
-              color: Color(0xFF384087), size: 30),
+        Text(
+          isEngToBcl ? 'English' : 'Bikol',
+          style: const TextStyle(
+              fontSize: 24,
+              color: Color(0xFF384087),
+              fontFamily: 'PoppinsBold'),
         ),
         const SizedBox(width: 15),
-        const Text('Bikol',
-            style: TextStyle(
-                fontSize: 24,
-                color: Color(0xFF384087),
-                fontFamily: 'PoppinsBold')),
+        // ── Swap button now actually toggles direction ──────
+        GestureDetector(
+          onTap: _toggleDirection,
+          child: Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: const Color(0xFFE5E8FF), width: 1.5),
+            ),
+            child: const Icon(
+                Icons.swap_horiz_outlined,
+                color: Color(0xFF384087), size: 30),
+          ),
+        ),
+        const SizedBox(width: 15),
+        Text(
+          isEngToBcl ? 'Bikol' : 'English',
+          style: const TextStyle(
+              fontSize: 24,
+              color: Color(0xFF384087),
+              fontFamily: 'PoppinsBold'),
+        ),
       ],
     );
   }
@@ -446,6 +442,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       controller?.clear();
                       translatedText = "";
                       showBreakdown = false;
+                      errorMessage = null;
                     });
                   },
                   child: const Icon(Icons.close_rounded,
