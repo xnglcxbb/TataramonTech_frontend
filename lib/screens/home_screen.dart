@@ -351,23 +351,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildTopHeader() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(25, 10, 25, 20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Text(
-            'Hello, ${widget.userName.split(' ').first}',
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 14,
-              fontFamily: 'PoppinsSemiBold',
-            ),
-          ),
-          const SizedBox(width: 12),
-          const CircleAvatar(radius: 24, backgroundColor: Colors.white),
-        ],
-      ),
+    return const Padding(
+      padding: EdgeInsets.fromLTRB(25, 10, 25, 20),
+      child: SizedBox.shrink(),
     );
   }
 
