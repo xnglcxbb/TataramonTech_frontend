@@ -67,14 +67,15 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
   void _copyToClipboard(List<dynamic> bicolWords) {
     String bicolText = bicolWords.map((w) => w['word']).join(' ');
-    Clipboard.setData(ClipboardData(text: bicolText));
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(copySuccessMessage),
-        behavior: SnackBarBehavior.floating,
-        duration: const Duration(seconds: 1),
-      ),
-    );
+    Clipboard.setData(ClipboardData(text: bicolText)).then((_) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(copySuccessMessage),
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 1),
+        ),
+      );
+    });
   }
 
   @override

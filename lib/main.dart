@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'screens/splash_screen.dart';
-import 'screens/onboarding/onboarding_1.dart';
-import 'screens/login_screen.dart';
-import 'screens/signup_screen.dart';
+//import 'screens/onboarding/onboarding_1.dart';
+//import 'screens/login_screen.dart';
+//import 'screens/signup_screen.dart';
 import 'screens/home_screen.dart';
 
 void main() {
@@ -24,9 +24,9 @@ class MyApp extends StatelessWidget {
       // 2. Map the names to the Screen Widgets
       routes: {
         '/': (context) => const SplashScreen(),
-        '/onboarding': (context) => const Onboarding1(),
-        '/login': (context) => const LoginScreen(),
-        '/signup': (context) => const SignupScreen(),
+        //'/onboarding': (context) => const Onboarding1(),
+        //'/login': (context) => const LoginScreen(),
+        //'/signup': (context) => const SignupScreen(),
         '/home': (context) => const HomeScreen(),
       },
     );

@@ -17,7 +17,7 @@ class AboutUsScreen extends StatelessWidget {
               child: Container(
                 width: double.infinity,
                 decoration: profileContainerDecoration(),
-                child: Padding(
+                child: SingleChildScrollView(
                   padding: const EdgeInsets.all(40),
                   child: Column(
                     children: [

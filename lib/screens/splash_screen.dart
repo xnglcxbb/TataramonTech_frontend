@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'onboarding/onboarding_1.dart';
-
+//import 'onboarding/onboarding_1.dart';
+import 'home_screen.dart';
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -11,13 +11,24 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
 
   @override
+  void initState() {
+    super.initState();
+    Future.delayed(const Duration(seconds: 2), () {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const HomeScreen()),
+      );
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (_) => const Onboarding1(),
+            builder: (_) => const HomeScreen(),
           ),
         );
       },
